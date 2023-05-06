@@ -1,4 +1,4 @@
-# Streamify Frontend 
+# Streamify Frontend
 
 ## Developing
 
@@ -20,4 +20,3 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
-
