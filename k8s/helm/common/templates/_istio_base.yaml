@@ -1,0 +1,121 @@
+{{- define "common.istio_base" -}}
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: composer-require-jwt
+spec:
+  action: ALLOW
+  rules:
+  - {}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: composer
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: composer-request-authentication
+spec:
+  jwtRules:
+    - forwardOriginalToken: true
+      issuer: http://keycloak:9999/realms/streamify
+      jwksUri: http://keycloak:9999/realms/streamify/protocol/openid-connect/certs
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: composer
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: streamify-gw
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - streamify.ru
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: streamify-certificate
+      mode: SIMPLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: streamify-vs
+spec:
+  gateways:
+  - streamify-gw
+  hosts:
+  - streamify.ru
+  http:
+  - match:
+    - uri:
+        prefix: /api/common
+    route:
+    - destination:
+        host: composer
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /openapi
+    route:
+    - destination:
+        host: composer
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /webjars
+    route:
+    - destination:
+        host: composer
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: health-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - "health.streamify.ru"
+    port:
+      number: 443
+      name: https-health
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: streamify-certificate
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: health-vs
+spec:
+  hosts:
+  - "health.streamify.ru"
+  gateways:
+  - health-gateway
+  http:
+  - route:
+    - destination:
+        host: composer
+        port:
+          number: 4004
+{{- end -}}

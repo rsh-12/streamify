@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.6'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'ru.streamify.microservices.composer'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+ext {
+    springCloudVersion = "2022.0.1"
+    resilience4jVersion = "2.0.2"
+}
+
+jar {
+    enabled = false
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':api')
+    implementation project(':util')
+
+    implementation 'org.springframework.retry:spring-retry'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit'
+
+    implementation "io.github.resilience4j:resilience4j-spring-boot3:${resilience4jVersion}"
+    implementation "io.github.resilience4j:resilience4j-reactor:${resilience4jVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.cloud:spring-cloud-commons'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream:3.2.1:test-binder'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+
+    dependencies {
+        dependency "io.github.resilience4j:resilience4j-spring:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-annotations:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-consumer:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-core:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-ratelimiter:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-retry:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-bulkhead:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-timelimiter:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-micrometer:${resilience4jVersion}"
+        dependency "io.github.resilience4j:resilience4j-circularbuffer:${resilience4jVersion}"
+    }
+}
+
+task prepareKotlinBuildScriptModel {
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

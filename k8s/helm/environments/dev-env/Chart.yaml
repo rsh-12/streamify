@@ -1,0 +1,37 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for running in a Dev and Test Environment
+name: dev-env
+version: 1.0.0
+
+dependencies:
+
+  - name: common
+    version: 1.0.0
+    repository: file://../../common
+
+  - name: rabbitmq
+    version: 1.0.0
+    repository: file://../../components/rabbitmq
+
+  - name: mongodb
+    version: 1.0.0
+    repository: file://../../components/mongodb
+
+  - name: song
+    version: 1.0.0
+    repository: file://../../components/song
+
+  - name: recommendation
+    version: 1.0.0
+    repository: file://../../components/recommendation
+
+  - name: comment
+    version: 1.0.0
+    repository: file://../../components/comment
+
+  - name: composer
+    version: 1.0.0
+    repository: file://../../components/composer
+
+

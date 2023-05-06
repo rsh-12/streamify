@@ -1,0 +1,36 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: streamify-certificate
+spec:
+  commonName: streamify.ru
+  subject:
+    countries:
+      - ru
+    localities:
+      - ural
+    organizationalUnits:
+      - it
+    organizations:
+      - streamify
+    postalCodes:
+      - stpc
+    provinces:
+      - sverdlovsk
+    serialNumber: sn
+    streetAddresses:
+      - ru
+  dnsNames:
+    - streamify.ru
+    - health.streamify.ru
+    - dashboard.streamify.ru
+    - kiali.streamify.ru
+    - tracing.streamify.ru
+    - prometheus.streamify.ru
+    - grafana.streamify.ru
+    - kibana.streamify.ru
+    - elasticsearch.streamify.ru
+    - mail.streamify.ru
+  issuerRef:
+    name: ca-issuer
+  secretName: streamify-certificate

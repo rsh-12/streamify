@@ -1,0 +1,77 @@
+server:
+  port: 7000
+  forward-headers-strategy: framework
+
+server.error.include-message: always
+
+logging:
+  level:
+    root: info
+    ru.streamify: debug
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: trace
+
+spring.application.name: composer
+
+spring:
+  cloud:
+    stream:
+      default-binder: rabbit
+      bindings:
+        songs-out-0:
+          destination: songs
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
+        recommendations-out-0:
+          destination: recommendations
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
+        comments-out-0:
+          destination: comments
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${app.auth-server}:9999/realms/streamify
+
+resilience4j:
+  timelimiter:
+    instances:
+      song:
+        timeout-duration: 2s
+  retry:
+    instances:
+      song:
+        max-attempts: 3
+        wait-duration: 1000
+        retry-exceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException.InternalServerError
+  circuitbreaker:
+    instances:
+      song:
+        allow-health-indicator-to-fail: false
+        register-health-indicator: true
+        sliding-window-type: count_based
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        ignore-exceptions:
+          - ru.streamify.api.exception.InvalidInputException
+          - ru.streamify.api.exception.NotFoundException
+
+management.health.circuitbreakers.enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+server:
+  port: 80

@@ -1,0 +1,49 @@
+spring.application.name: song
+
+spring.data.mongodb:
+  host: localhost
+  port: 27017
+  database: song-db
+
+server.port: 7001
+server:
+  error:
+    include-message: always
+
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+  cloud:
+    function:
+      definition: messageProcessor
+    stream:
+      bindings:
+        messageProcessor-in-0:
+          destination: songs
+          group: songsGroup
+          content-type: application/json
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 500
+            back-off-max-interval: 1000
+            back-off-multiplier: 2.0
+      rabbit:
+        bindings:
+          messageProcessor-in-0:
+            consumer:
+              auto-bind-dlq: true
+              republish-to-dlq: true
+
+logging:
+  level:
+    root: info
+    ru.streamify: debug
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: debug
+
+---
+spring.config.activate.on-profile: docker
+spring.data.mongodb.host: mongodb
+
+server:
+  port: 80

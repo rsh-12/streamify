@@ -1,0 +1,8 @@
+server.error.include-message: always
+
+logging:
+  level:
+    root: INFO
+    ru.ru.streamify: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

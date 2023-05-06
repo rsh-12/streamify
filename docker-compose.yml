@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+
+  # auth server
+  db:
+    image: postgres:14-alpine
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    volumes:
+      - ./datastore/keycloak:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.0.2
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KC_HOSTNAME: keycloak
+    command:
+      - "start-dev"
+      - "--http-port=9999"
+    ports:
+      - "9999:9999"
+    depends_on:
+      db:
+        condition: service_started
+
+  # microservices
+  song:
+    build: microservices/song-service
+    image: streamify/song-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/song.yml
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USR}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PWD}
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
+      - SPRING_DATA_MONGODB_USERNAME=${MONGODB_USR}
+      - SPRING_DATA_MONGODB_PASSWORD=${MONGODB_PWD}
+    volumes:
+      - $PWD/config-repo:/config-repo
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  recommendation:
+    build: microservices/recommendation-service
+    image: streamify/recommendation-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/recommendation.yml
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USR}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PWD}
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
+      - SPRING_DATA_MONGODB_USERNAME=${MONGODB_USR}
+      - SPRING_DATA_MONGODB_PASSWORD=${MONGODB_PWD}
+    volumes:
+      - $PWD/config-repo:/config-repo
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  comment:
+    build: microservices/comment-service
+    image: streamify/comment-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/comment.yml
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USR}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PWD}
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
+      - SPRING_DATA_MONGODB_USERNAME=${MONGODB_USR}
+      - SPRING_DATA_MONGODB_PASSWORD=${MONGODB_PWD}
+    volumes:
+      - $PWD/config-repo:/config-repo
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  composer:
+    build: microservices/composer-service
+    image: streamify/composer-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/composer.yml
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USR}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PWD}
+    volumes:
+      - $PWD/config-repo:/config-repo
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:4.4.2
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    ports:
+      - "27017:27017"
+    command: mongod
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USR}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PWD}
+    healthcheck:
+      test: "mongo --eval 'db.stats().ok'"
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+  rabbitmq:
+    image: rabbitmq:3.8.11-management
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USR}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PWD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60

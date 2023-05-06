@@ -1,0 +1,16 @@
+fullnameOverride: song
+
+image:
+  name: song-service
+
+env:
+  SPRING_PROFILES_ACTIVE: "docker"
+  SPRING_CONFIG_LOCATION: file:/config-repo/application.yml,file:/config-repo/song.yml
+
+livenessProbe_enabled: true
+readinessProbe_enabled: true
+
+configmap:
+  enabled: true
+  volumeMounts:
+    mountPath: /config-repo

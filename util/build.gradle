@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
+}
+
+group = 'se.magnus.microservices.util'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    springBootVersion = '3.0.6'
+}
+
+dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+
+    implementation project(':api')
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation project(path: ':')
+    implementation project(path: ':')
+    implementation project(path: ':')
+    implementation project(path: ':')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task prepareKotlinBuildScriptModel {
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

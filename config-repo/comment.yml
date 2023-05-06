@@ -1,0 +1,51 @@
+spring.application.name: comment
+
+server.port: 7003
+server.error.include-message: always
+
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      host: localhost
+      port: 27017
+      database: comment-db
+  cloud:
+    function:
+      definition: messageProcessor
+    stream:
+      default-binder: rabbit
+      bindings:
+        messageProcessor-in-0:
+          destination: comments
+          group: commentsGroup
+          content-type: application/json
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 500
+            back-off-max-interval: 1000
+            back-off-multiplier: 2.0
+      rabbit:
+        bindings:
+          messageProcessor-in-0:
+            consumer:
+              auto-bind-dlq: true
+              republish-to-dlq: true
+
+logging:
+  level:
+    root: INFO
+    ru.streamify: DEBUG
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      host: mongodb
+
+server:
+  port: 80

@@ -1,0 +1,36 @@
+api:
+  common:
+    version: 1.0.0
+    title: Sample API
+    description: Description of the API...
+    termsOfService: MY TERMS OF SERVICE
+    license: MY LICENSE
+    licenseUrl: MY LICENSE URL
+
+    externalDocDesc: MY WIKI PAGE
+    externalDocUrl: MY WIKI URL
+    contact:
+      name: NAME OF CONTACT
+      url: URL TO CONTACT
+      email: contact@mail.com
+
+spring:
+  cloud:
+    stream:
+      default-binder: rabbit
+      bindings:
+        songs-out-0:
+          destination: songs
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
+        recommendations-out-0:
+          destination: recommendations
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
+        comments-out-0:
+          destination: comments
+          content-type: application/json
+          producer:
+            required-groups: auditGroup
