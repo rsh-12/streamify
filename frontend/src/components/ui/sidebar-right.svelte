@@ -36,7 +36,7 @@
 	class="h-screen text-black font-bold max-w-[420px] bg-gray-50 p-6 flex flex-col justify-between"
 >
 	<div>
-		<div class="mt-8">
+		<div class="mt-4">
 			<h3>Shortcuts</h3>
 			<ul class="w-full mt-8 flex flex-wrap gap-4">
 				{#each shortcuts as shortcut}

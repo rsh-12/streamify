@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <div class="container h-full mx-auto flex justify-center items-center">
 	<div class="space-y-10 text-center">
 		<div class="flex justify-center text-zinc-800 gap-4 items-center">
