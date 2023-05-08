@@ -41,6 +41,9 @@ USER node
 
 FROM node:16.15.0-alpine AS production
 
+# Install ffmpeg
+RUN apk add  --no-cache ffmpeg
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build application/node_modules ./node_modules
 COPY --chown=node:node --from=build application/dist ./dist
