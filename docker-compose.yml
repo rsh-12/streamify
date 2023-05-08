@@ -41,6 +41,18 @@ services:
         condition: service_started
 
   # microservices
+  streaming:
+    build: microservices/streaming-service
+    image: streamify/streaming-service
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - CONFIG_LOCATION=/config-repo/streamify.yml
+    volumes:
+      - $PWD/config-repo:/config-repo
+
   song:
     build: microservices/song-service
     image: streamify/song-service
