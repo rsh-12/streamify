@@ -35,5 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Custom storage ###
+# Keycloak DB
 datastore
+# Divided into chunks file
 filestore
