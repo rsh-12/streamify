@@ -49,9 +49,11 @@ services:
         limits:
           memory: 512m
     environment:
-      - CONFIG_LOCATION=/config-repo/streamify.yml
+      - CONFIG_LOCATION=/config-repo/streaming.yml
+      - ACTIVE_PROFILE=docker
     volumes:
       - $PWD/config-repo:/config-repo
+      - ./filestore:/filestore
 
   song:
     build: microservices/song-service
@@ -139,6 +141,9 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    ports:
+      - "8080:80"
+      - "4004:4004"
 
   mongodb:
     image: mongo:4.4.2

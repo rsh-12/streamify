@@ -1,2 +1,7 @@
-http:
-  port: 8000
+docker.http.port: 80
+dev.http.port: 3000
+
+# Temp properties
+test:
+  m3u8:
+    location: ../../filestore/temp/chunks/

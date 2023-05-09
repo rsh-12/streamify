@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.webflux.ProxyExchange;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -18,11 +20,14 @@ import ru.streamify.api.composer.song.SongCompositeService;
 import ru.streamify.api.core.comment.Comment;
 import ru.streamify.api.core.recommendation.Recommendation;
 import ru.streamify.api.core.song.Song;
+import ru.streamify.microservices.composer.util.ServiceConstants;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+
+import static ru.streamify.microservices.composer.util.ServiceConstants.API_STREAMING_SERVICE;
 
 @RestController
 public class SongCompositeServiceImpl implements SongCompositeService {
@@ -45,6 +50,15 @@ public class SongCompositeServiceImpl implements SongCompositeService {
             LOG.warn("create composite song failed: {}", re.toString());
             throw re;
         }
+    }
+
+    @NotNull
+    @Override
+    public Mono<ResponseEntity<byte[]>> streamMedia(
+            @NotNull String fileName,
+            @NotNull ProxyExchange<byte[]> proxy) {
+
+        return proxy.uri(API_STREAMING_SERVICE + "/" + fileName).get();
     }
 
     private Mono<Void> createAggregateSong(SongAggregate body) {

@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import {Controller, Get, Param, StreamableFile} from '@nestjs/common';
+import {AppService} from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+    constructor(private readonly appService: AppService) {
+    }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+    // Use 0.m3u8 file name for testing
+    @Get(':fileName')
+    getFileStream(@Param() params: any): StreamableFile {
+        return this.appService.getStreamingMedia(params.fileName);
+    }
 }

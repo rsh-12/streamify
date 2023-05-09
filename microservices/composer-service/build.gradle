@@ -26,7 +26,7 @@ dependencies {
     implementation project(':util')
 
     implementation 'org.springframework.retry:spring-retry'
-
+    implementation 'org.springframework.cloud:spring-cloud-gateway-webflux:4.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
