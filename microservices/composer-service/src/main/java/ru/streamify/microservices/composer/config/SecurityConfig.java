@@ -23,6 +23,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange()
+                .pathMatchers("/api/common/stream/**").permitAll() // TODO: remove this line
                 .pathMatchers(ACTUATOR).permitAll()
                 .pathMatchers(POST, API_COMMON).hasAuthority(SCOPE_WRITE)
                 .pathMatchers(DELETE, API_COMMON).hasAnyAuthority(SCOPE_WRITE)

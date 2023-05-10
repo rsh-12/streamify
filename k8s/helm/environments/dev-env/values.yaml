@@ -15,7 +15,7 @@ secrets:
   mongodb-credentials:
     SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
     SPRING_DATA_MONGODB_USERNAME: mongodb-user-dev
-    SPRING_DATA_MONGODB_PASSWORD: c
+    SPRING_DATA_MONGODB_PASSWORD: mongodb-pwd-dev
 
 rabbitmq:
   envFromSecretRefs:
@@ -49,3 +49,4 @@ destinationRules:
   - name: song
   - name: recommendation
   - name: comment
+  - name: streaming

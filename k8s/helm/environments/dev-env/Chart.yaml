@@ -34,4 +34,7 @@ dependencies:
     version: 1.0.0
     repository: file://../../components/composer
 
+  - name: streaming
+    version: 1.0.0
+    repository: file://../../components/streaming
 

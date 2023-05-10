@@ -1,4 +1,4 @@
-FROM node:16.15.0-alpine AS development
+FROM node:16.15.0 AS development
 
 WORKDIR application
 
@@ -15,7 +15,7 @@ COPY --chown=node:node . .
 # Use the node user from the image (instead of the root user)
 USER node
 
-FROM node:16.15.0-alpine AS build
+FROM node:16.15.0 AS build
 
 WORKDIR application
 
@@ -39,10 +39,12 @@ RUN npm ci --only=production && npm cache clean --force
 
 USER node
 
-FROM node:16.15.0-alpine AS production
+FROM node:16.15.0 AS production
 
 # Install ffmpeg
-RUN apk add  --no-cache ffmpeg
+RUN apt-get -y update
+RUN apt-get -y upgrade
+RUN apt-get install -y ffmpeg
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build application/node_modules ./node_modules

@@ -1,0 +1,18 @@
+fullnameOverride: streaming
+
+image:
+  name: streaming-service
+
+env:
+  ACTIVE_PROFILE: "docker"
+  CONFIG_LOCATION: /config-repo/streaming.yml
+
+configmap:
+  enabled: true
+  volumeMounts:
+    mountPath: /config-repo
+
+use:
+  filestore:
+    pv: true
+    pvc: true

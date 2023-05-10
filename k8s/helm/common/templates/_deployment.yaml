@@ -76,10 +76,19 @@ spec:
           volumeMounts:
             - name: {{ include "common.fullname" . }}
               mountPath: {{ .Values.configmap.volumeMounts.mountPath }}
+          {{- if .Values.use.filestore.pv }}
+            - name: filestore-volume
+              mountPath: /filestore
+          {{- end }}
       volumes:
         - name: {{ include "common.fullname" . }}
           configMap:
             name: {{ include "common.fullname" . }}
+        {{- if .Values.use.filestore.pvc }}
+        - name: filestore-volume
+          persistentVolumeClaim:
+            claimName: filestore-pvc
+        {{- end }}
       {{- end }}
 {{- end -}}
 {{- end -}}

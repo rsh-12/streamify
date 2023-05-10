@@ -44,6 +44,11 @@ readinessProbe:
 configmap:
   enabled: false
 
+use:
+  filestore:
+    pv: false
+    pvc: false
+
 resources:
   limits:
     memory: 350Mi
